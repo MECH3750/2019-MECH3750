@@ -1,0 +1,221 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{exinn}{Example}[section]
+\newenvironment{example}
+{\clubpenalty=10000
+	\begin{exinn}%
+		\mbox{}%
+		{\color{blue}\leaders\hrule height .8ex depth \dimexpr-.8ex+0.8pt\relax\hfill}%
+		\mbox{}\linebreak\ignorespaces}
+	{\par\kern2ex\hrule\end{exinn}}
+
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{bigints}
+\usepackage{fourier}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{dsfont}
+\usepackage{units}
+\usepackage{textcomp}
+\usepackage{subcaption}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{pdfpages}
+\renewcommand{\lstlistlistingname}{Code Listings}
+\renewcommand{\lstlistingname}{Code Listing}
+\definecolor{gray}{gray}{0.5}
+\definecolor{green}{rgb}{0,0.5,0}
+\lstset{
+	tabsize=4,
+	rulecolor=,
+	language=python,
+	%basicstyle=\ttfamily\scriptsize,
+	basicstyle=\footnotesize,
+	upquote=true,
+	numbers=left,
+	numberstyle=\footnotesize,
+	aboveskip={1.5\baselineskip},
+	extendedchars=true,
+	linewidth=\linewidth,
+	breaklines=false,
+	prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	columns=fullflexible,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+\pagestyle{fancy}
+\lhead{Travis Mitchell}
+\rhead{Week 05}
+\chead{MECH3750 - Content Summary}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\footrulewidth}{0.8pt}
+
+\author{\textit{Travis Mitchell}}
+\title{Lecture Content Summaries for MECH3750}
+\date{Updated: 22 August, 2019}			
+
+\makeatletter
+\newcommand*{\toccontents}{\@starttoc{toc}}
+\makeatother
+\renewcommand{\thesection}{\thepart \arabic{section}}
+
+
+\begin{document}
+\section{Introduction to partial differential equations (PDEs)}
+There are three core PDEs that we will look at:
+\begin{itemize}
+	\item Wave equation:
+		\begin{align*}
+			\frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}
+		\end{align*}
+	\item Heat or diffusion equation:
+		\begin{align*}
+			\frac{\partial u}{\partial t} = k \frac{\partial^2 u}{\partial x^2}
+		\end{align*}
+	\item Laplace equation:
+		\begin{align*}
+			0 =  \frac{\partial^2 u}{\partial x^2} +  \frac{\partial^2 u}{\partial y^2}
+		\end{align*}
+\end{itemize}
+These equations here are presented in lower dimensions, but not that when we have 2D or 3D analysis the operator, $\nabla^2 = \nabla (\nabla\cdot u)$ is used:
+\begin{align*}
+	\nabla^2 =  \frac{\partial^2 u}{\partial x^2} +  \frac{\partial^2 u}{\partial y^2} +  \frac{\partial^2 u}{\partial z^2}
+\end{align*}
+
+\subsection{Initial Conditions}
+In order to solve these equations, we typically need to know what they originally look like in order to resolve them forward through time. For example, to solve the wave equation we typically need,
+\begin{align*}
+	u(x,0) &= \text{Initial position of e.g. a string at } t=0, \\
+	\frac{\partial u}{\partial t} (x,0) &= \text{velocity of e.g. a string at } t=0.
+\end{align*}
+
+\subsection{Boundary Conditions}
+For solving these equations, it is also important to know what the boundaries are - i.e. what is limiting the motion of our system. Again, an example of this for the wave equation could be,
+\begin{align*}
+	u(0,t) &= u_0 = \text{the start of the string is fixed for all } t, \\
+	u(L,t) &= u_L = \text{the end of the string may also be fixed for all }, t.
+\end{align*}
+
+
+\section{Introduction to the heat (or diffusion) equation}
+Used to model how heat would diffuse for example through a plate or how a concentration of particles may diffuse in space. In the lectures, we used a population of walkers on a 2D grid in order to derive the equation where we found a discrete model,
+\begin{align*}
+	\frac{u(x,y,t+\Delta t) - u(x,y,t)}{\Delta t} &= \frac{p(\Delta x)^2}{\Delta t} \times \\ &\left(\frac{u(x+\Delta x,y,t) - 2u(x,y,t) + u(x-\Delta x,y,t)}{\Delta x^2} + \frac{u(x,y+\Delta y,t) - 2u(x,y,t) + u(x,y-\Delta y,t)}{\Delta x^2}\right) \\
+	\frac{\partial u}{\partial t} &= k\left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2}\right)
+\end{align*}
+
+\subsection{Initial Conditions}
+For this system, as was seen by our lattice example, only an initial concentration is required,
+\begin{align*}
+	u(x,y,0) = f(x,y).
+\end{align*}
+
+\subsection{Boundary Conditions}
+Here, we can define the boundaries to be sinks like was done in the lecture, where $u=0$ on all boundaries. This type of `fixed-value' boundary is typically termed a \textbf{Dirichlet boundary condition}, and we will touch on these throughout the course. We note here, that the boundaries don't need to be fixed at 0. For example, if we consider the diffusion equation in terms of the diffusion of heat... We could have a boundary fixed at a particular temperature. \\
+
+The other boundary condition that we commonly see is a \textbf{Neumann boundary condition}, which we would write for example as
+\begin{align*}
+	\frac{\partial u}{\partial x} (L,y) = g(y),
+\end{align*}
+on the right hand side boundary of our 2D domain. This effectively specifies a flow, or flux, of a property. Again considering heat, a flow of heat in or out of the system could be seen. A particular type of interest is an insulating boundary, in which no heat can flow, $g(y)=0$.
+
+\section{Laplace Equation}
+If we consider the heat on a plate as $t\rightarrow \infty$, such that the heat has reached a steady-state. We can then determine that, 
+\begin{align*}
+	\frac{\partial u}{\partial t} = 0.
+\end{align*}
+And then the diffusion equation can be seen to satisfy the Laplace equation as $u(x,y,t)\rightarrow u(x,y)$. This equation is also commonly seen in incompressible fluid mechanics,
+\begin{align*}
+0 = \nabla u.
+\end{align*}
+
+
+\section{Fourier's method for the wave equation}
+We will move to a short-hand notation in which the wave equation can be written as,
+\begin{align*}
+	u_{tt} = c^2 u_{xx}
+\end{align*}
+with
+\begin{align*}
+	\text{Initial cond's } \quad u(x,0) &= f(x) \\
+						   u_t(x,0) &= g(x) \\
+	\text{Boundary cond's } \quad u(0,t) &= u(L,t) = 0.
+\end{align*}
+
+To solve this, we will seek a solution of the form,
+\begin{align*}
+	u(x,t) = F(x) G(t),
+\end{align*}
+namely, we are assuming the function is \textit{separable}.
+
+\subsection{Introduction to separation of variables}
+Let us try to apply this to the initial conditions of our previous system,
+\begin{align*}
+	u(0,t) &= 0 = F(0) G(t),
+	u(L,t) &= 0 = F(L) G(t)
+\end{align*}
+So either $G(t)=0$ (bad) or $F(0)=0$, and similarly we have $F(L)=0$. Let us now look if we can apply this to the actual wave equation, so the left-hand and right-hand side of the equation will require,
+\begin{align*}
+	u_{tt} &= F(x) G''(t),\\
+	u_{xx} &= F''(x) G(t). 
+\end{align*}
+Substituting this in and separating our variables we find,
+\begin{align*}
+	\frac{G''(t)}{c^2 G(t)} &= \frac{F''(x)}{F(x)}.
+\end{align*}
+As one of these is a function of time and the other of space, we conclude that these ratios must be a constant. Which if this is true, we have two ODE's to solve,
+\begin{align*}
+	F''(x) - kF(x) &= 0 \\
+	G''(t) - c^2k G(t) &= 0.
+\end{align*}
+There are solutions to these, and for which we consider the constant $k$ to be $0$, $\mu^2$ (positive) and \\
+
+From this, we find $k=0$ to be useless. From $k$ positive we find,
+\begin{align*}
+	F(x)&= Ae^{\mu x} + Be^{-\mu x}\\
+	    &= a \cosh (\mu x) + b \sinh (\mu x). \\
+\therefore F(0) = 0 &\implies a = 0 \\
+F(L) = 0 \implies b\sinh(\mu L) &= 0
+\end{align*}
+This again is not useful, so we conclude that $k<0$, so set $k=-p^2$ which gives,
+\begin{align*}
+	F(x)&= Ae^{ipx} + Be^{-ipx} \\
+		&= a\cos(px) + b\sin(px)
+\end{align*}
+We can then apply the boundary conditions ($F(0)=F(L)=0$), which for us leave,
+\begin{align*}
+	p = n\pi / L, \quad n=1,2,3,\dots
+\end{align*}
+Now apply this value of $k$ into the ODE for $G(t)$,
+\begin{align*}
+	G'' + p^2 c^2 G &= 0 \\
+	\implies G(t) &= A \cos(n\pi c t/L) + B \sin(n\pi ct/L)
+\end{align*}
+with this, we can now conclude that the solutions for $u$ are,
+\begin{align*}
+ u(x,t) = F(x)G(t) &= b\sin(n\pi x/L) [A \cos(n\pi c t/L) + B \sin(n\pi ct/L)] \\
+ 				   &= [A_n \cos(n\pi c t/L) + B_n \sin(n\pi ct/L)] \sin(n\pi x/L)
+\end{align*}
+\end{document}
