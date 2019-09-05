@@ -1,0 +1,197 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{exinn}{Example}[section]
+\newenvironment{example}
+{\clubpenalty=10000
+	\begin{exinn}%
+		\mbox{}%
+		{\color{blue}\leaders\hrule height .8ex depth \dimexpr-.8ex+0.8pt\relax\hfill}%
+		\mbox{}\linebreak\ignorespaces}
+	{\par\kern2ex\hrule\end{exinn}}
+
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{bigints}
+\usepackage{fourier}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{dsfont}
+\usepackage{units}
+\usepackage{textcomp}
+\usepackage{subcaption}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{pdfpages}
+\renewcommand{\lstlistlistingname}{Code Listings}
+\renewcommand{\lstlistingname}{Code Listing}
+\definecolor{gray}{gray}{0.5}
+\definecolor{green}{rgb}{0,0.5,0}
+\lstset{
+	tabsize=4,
+	rulecolor=,
+	language=python,
+	%basicstyle=\ttfamily\scriptsize,
+	basicstyle=\footnotesize,
+	upquote=true,
+	numbers=left,
+	numberstyle=\footnotesize,
+	aboveskip={1.5\baselineskip},
+	extendedchars=true,
+	linewidth=\linewidth,
+	breaklines=false,
+	prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	columns=fullflexible,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+\pagestyle{fancy}
+\lhead{Travis Mitchell}
+\rhead{Week 06}
+\chead{MECH3750 - Content Summary}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\footrulewidth}{0.8pt}
+
+\author{\textit{Travis Mitchell}}
+\title{Lecture Content Summaries for MECH3750}
+\date{Updated: 22 August, 2019}			
+
+\makeatletter
+\newcommand*{\toccontents}{\@starttoc{toc}}
+\makeatother
+\renewcommand{\thesection}{\thepart \arabic{section}}
+
+
+\begin{document}
+\section{Separation of Variables Conti.}
+Last week we managed to conclude:
+\begin{align*}
+ u(x,t) = F(x)G(t) &= b\sin(n\pi x/L) [A \cos(n\pi c t/L) + B \sin(n\pi ct/L)] \\
+ 				   &= [A_n \cos(n\pi c t/L) + B_n \sin(n\pi ct/L)] \sin(n\pi x/L)
+\end{align*}
+
+\textit{Aside:} A note on linearity \\
+As each value of $n$ gives us a new solution to the equation, as they are linear equations, the superposition of these is also a solution. This means we can write,
+\begin{align*}
+	u(x,t) = \sum_1^{\infty} \left(A_n \cos \left(\frac{n\pi c t}{L}\right) + B_n \sin \left(\frac{n\pi c t}{L}\right)\right) \sin \left(\frac{n\pi x}{L}\right).
+\end{align*}
+
+Here, we now apply initial conditions to get our coefficients. This aligns quite closely with our past work on Fourier series. We obtain:
+\begin{align*}
+	A_n= \frac{2}{L} \int_0^L \sin \left(\frac{n\pi x}{L}\right) f(x) dx
+\end{align*}
+where, $f(x)= u(x,0)$. The other initial condition, $g(x) = u_t(x,0)$ gives,
+\begin{align*}
+	B_n = \frac{2}{n\pi c} \int_0^L \sin \left(\frac{n\pi x}{L}\right) g(x) dx
+\end{align*} 
+
+
+\section{Fourier's method for 1-D heat equation}
+Looking to solve:
+\begin{align*}
+	\partial_t u = k \partial_{xx} u
+\end{align*}
+and we are considering thermally insulated ends (boundary conditions),
+\begin{align*}
+	\partial_x u(0,t) &= 0, \\
+	\partial_x u(L,t) &= 0.
+\end{align*}
+We also have the initial condition,
+\begin{align*}
+	u(x,0) = f(x).
+\end{align*}
+
+As per the previous case, we are assuming we can find a solution in a separable form:
+\begin{align*}
+	u(x,t) = F(x) G(t).
+\end{align*}
+Now apply the boundary conditions again and eliminate useless solutions to obtain,
+\begin{align*}
+	 F'(0) = F'(L) = 0.
+\end{align*}
+
+Now formulate the partials and sub them into the heat equation. Separating our variables onto the left and right hand side again gives us,
+\begin{align*}
+	\frac{G'}{c^2G} = \frac{F''}{F}.
+\end{align*}
+This is again a function of $t$ equal to a function of $x$, so it is only possible if they equal a constant. Therefore, we now have two partial differential equations that we know how to solve,
+\begin{align*}
+	G' &= kc^2 G \\
+	F''&= kF, \quad F'(0)=F'(L)=0.
+\end{align*}
+
+If we go through the process, we again find that the constant needs to be negative so for convenience set, $k=-p^2$. Thus we need to solve,
+\begin{align*}
+	F'' &= -p^2 F \\
+	\therefore F &= a \cos(px) + b\sin(px).
+\end{align*}
+Applying our boundary conditions for $F$ gives,
+\begin{align*}
+	b&=0, \quad p = \frac{n\pi}{L}, \\
+\implies	F(x) &= a\cos\left(\frac{n\pi x}{L}\right).
+\end{align*}
+Therefore, our temporal function becomes
+\begin{align*}
+	G' &= kc^2 G \\
+	\implies G(t) &= D \exp\left[-\left(\frac{n\pi c}{L}\right)^2 t\right]
+\end{align*}
+Combining these equations we get,
+\begin{align*}
+u(x,t) &= A_0 \\
+u_n(x,t) &= A_n\exp\left[-\left(\frac{n\pi c}{L}\right)^2 t\right]\cos\left(\frac{n\pi x}{L}\right). \\
+\therefore u(x,t) &= A_0 + \sum_n u_n.
+\end{align*}
+This currently satisfies the PDE and the BCs, so we then use the initial condition to define the coefficients. From this,
+\begin{align*}
+	A_n = \frac{2}{L} \int_0^L f(x) \cos \frac{n\pi x}{L} dx
+\end{align*}
+
+\subsection{Steady-state, 2D heat equation}
+We can apply the same ideas to,
+\begin{align*}
+	u_{xx} + u_{yy} = 0.
+\end{align*}
+
+Doing the normal procedure, $u(x,y) = F(x)G(y)$ we achieve the two ODEs,
+\begin{align*}
+	F'' &= kF \\
+	G'' &= -kG.
+\end{align*}
+Again, taking $k$ as negative, we find,
+\begin{align*}
+	F &= A\cos(px) + B\sin(px), \quad F(0) = F(a) = 0 \\
+	\implies F(x) &= B_n \sin\left(\frac{n\pi}{a}x\right) \\
+	G &= C \cosh\left(\frac{n\pi y}{a}\right) + D\sinh\left(\frac{n\pi y}{a}\right), \quad G(0) = 0 \\
+	G(y) &= D\sinh\left(\frac{n\pi y}{a}\right).
+\end{align*}
+So combining these,
+\begin{align*}
+	u(x,y) = \sum_n B_n \sin\left(\frac{n\pi}{a}x\right)\sinh\left(\frac{n\pi }{a}y\right)
+\end{align*}
+
+After this process there is conveniently one BC left to fix $B_n$ at $u(x,b)=f(x)$. Using a Fourier sine series we find,
+\begin{align*}
+	B_n = \frac{2}{a\sinh(2\pi b/a)} \int_0^a f(x) \sin\frac{n\pi x}{a} dx
+\end{align*}
+
+\end{document}

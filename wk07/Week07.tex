@@ -1,0 +1,130 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{exinn}{Example}[section]
+\newenvironment{example}
+{\clubpenalty=10000
+	\begin{exinn}%
+		\mbox{}%
+		{\color{blue}\leaders\hrule height .8ex depth \dimexpr-.8ex+0.8pt\relax\hfill}%
+		\mbox{}\linebreak\ignorespaces}
+	{\par\kern2ex\hrule\end{exinn}}
+
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{bigints}
+\usepackage{fourier}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{dsfont}
+\usepackage{units}
+\usepackage{textcomp}
+\usepackage{subcaption}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{pdfpages}
+\renewcommand{\lstlistlistingname}{Code Listings}
+\renewcommand{\lstlistingname}{Code Listing}
+\definecolor{gray}{gray}{0.5}
+\definecolor{green}{rgb}{0,0.5,0}
+\lstset{
+	tabsize=4,
+	rulecolor=,
+	language=python,
+	%basicstyle=\ttfamily\scriptsize,
+	basicstyle=\footnotesize,
+	upquote=true,
+	numbers=left,
+	numberstyle=\footnotesize,
+	aboveskip={1.5\baselineskip},
+	extendedchars=true,
+	linewidth=\linewidth,
+	breaklines=false,
+	prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	columns=fullflexible,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+\pagestyle{fancy}
+\lhead{Travis Mitchell}
+\rhead{Week 06}
+\chead{MECH3750 - Content Summary}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\footrulewidth}{0.8pt}
+
+\author{\textit{Travis Mitchell}}
+\title{Lecture Content Summaries for MECH3750}
+\date{Updated: 22 August, 2019}			
+
+\makeatletter
+\newcommand*{\toccontents}{\@starttoc{toc}}
+\makeatother
+\renewcommand{\thesection}{\thepart \arabic{section}}
+
+
+\begin{document}
+\section{Classification of PDEs}
+Chris gave a pretty good description of these, so one of the take home messages is how to determine which kind of PDE you are dealing with so that we can figure out appropriate solution techniques. To do this, consider the PDE in a general form (we will look at second-order PDEs here),
+\begin{align*}
+	A \partial_{xx} u + 2B \partial_{xy} u + C \partial_{yy} u = D\partial_x u + E \partial_y u.
+\end{align*}
+
+Thus, if we consider this to be a quadratic equation, we can calculate the determinant by,
+\begin{align*}
+	(2B)^2 - 4 AC &= 0.
+\end{align*}
+With this, we then have the cases:
+\begin{align*}
+B^2 - AC \begin{cases}
+				= 0, \quad \text{Parabolic} \\
+				< 0, \quad \text{Elliptic} \\
+				> 0, \quad \text{Hyperbolic} \\
+\end{cases}
+\end{align*}
+
+\section{Numerical solutions for PDEs}
+\subsection{The diffusion equation}
+\begin{align*}
+	\partial_t u = D \partial_{xx} u
+\end{align*}
+
+We can solve this explicitly using a forward difference in time,
+\begin{align*}
+\partial_t u = \frac{u_j^{m+1} - u_j^m}{\Delta t} + O(\Delta t),
+\end{align*}
+or implicitly using a backward difference in time,
+\begin{align*}
+\partial_t u = \frac{u_j^{m} - u_j^{m-1}}{\Delta t} + O(\Delta t).
+\end{align*}
+For the spatial derivative, we often use a second order central difference,
+\begin{align*}
+\partial_{xx}u  = \frac{u_{j+1}^m - 2u_j^m + u_{j-1}^m}{(\Delta x)^2}.
+\end{align*}
+
+Therefore, if we substitute these both into the diffusion equation above, the explicit update would become,
+\begin{align*}
+ \boxed{u_j^{m+1} = u_j^m + \frac{D \Delta t}{(\Delta x)^2} \left(\frac{u_{j+1}^m - 2u_j^m + u_{j-1}^m}{(\Delta x)^2}\right)}
+\end{align*}
+
+This equation will then govern the dynamics of our initial population. In a numerical problem, we also tend to describe boundary conditions that will need to be taken into account. In the lectures we went through writing this in matrix form, this can be a very convenient way to code up the solutions and useful to analyse stability.
+\end{document}
