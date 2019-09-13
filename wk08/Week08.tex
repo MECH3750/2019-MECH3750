@@ -1,0 +1,147 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{exinn}{Example}[section]
+\newenvironment{example}
+{\clubpenalty=10000
+	\begin{exinn}%
+		\mbox{}%
+		{\color{blue}\leaders\hrule height .8ex depth \dimexpr-.8ex+0.8pt\relax\hfill}%
+		\mbox{}\linebreak\ignorespaces}
+	{\par\kern2ex\hrule\end{exinn}}
+
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{bigints}
+\usepackage{fourier}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{dsfont}
+\usepackage{units}
+\usepackage{textcomp}
+\usepackage{subcaption}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{pdfpages}
+\renewcommand{\lstlistlistingname}{Code Listings}
+\renewcommand{\lstlistingname}{Code Listing}
+\definecolor{gray}{gray}{0.5}
+\definecolor{green}{rgb}{0,0.5,0}
+\lstset{
+	tabsize=4,
+	rulecolor=,
+	language=python,
+	%basicstyle=\ttfamily\scriptsize,
+	basicstyle=\footnotesize,
+	upquote=true,
+	numbers=left,
+	numberstyle=\footnotesize,
+	aboveskip={1.5\baselineskip},
+	extendedchars=true,
+	linewidth=\linewidth,
+	breaklines=false,
+	prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	columns=fullflexible,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+\pagestyle{fancy}
+\lhead{Travis Mitchell}
+\rhead{Week 08}
+\chead{MECH3750 - Content Summary}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\footrulewidth}{0.8pt}
+
+\author{\textit{Travis Mitchell}}
+\title{Lecture Content Summaries for MECH3750}
+\date{Updated: 13 September, 2019}			
+
+\makeatletter
+\newcommand*{\toccontents}{\@starttoc{toc}}
+\makeatother
+\renewcommand{\thesection}{\thepart \arabic{section}}
+
+
+\begin{document}
+Last week we generalised the explicit finite difference scheme. Additionally, the stability of these schemes were analysed using a \textit{von Neumann} analysis. From here boundary conditions were studied, in particular, how to build these into the general matrix scheme that was derived.
+
+\section{Backwards difference scheme for parabolic PDEs}
+So far we have looked at using a \textit{forwards in time, centred in space} approach sometimes referred to as FTCS scheme. However, as this leads to an \textbf{explicit} scheme, it has stability criterion - i.e. the CFL number in which the $\sigma$ coefficient (following lecture notation) must be less than or equal to $1/2$. \\
+
+If we consider the diffusion equation,
+\begin{align*}
+	\partial_t u = D\partial_{xx} u
+\end{align*}
+and discretise this using a backwards difference we get,
+\begin{align*}
+	\frac{u_j^m - u_j^{m-1}}{\Delta t} &= \frac{D(u_{j+1}^m - 2u_j^m + u_{j-1}^m)}{(\Delta x)^2} \\
+	u_j^{m-1} &= u_j^m - \frac{D \Delta t}{(\Delta x)^2} \left(u_{j+1}^m - 2u_j^m + u_{j-1}^m\right)
+\end{align*}
+Now, taking the normal approach we set $\sigma = \frac{D \Delta t}{(\Delta x)^2}$ and write,
+\begin{align*}
+		u_j^{m-1} &= (1+2\sigma)u_j^m - \sigma u_{j+1}^m - \sigma u_{j-1}^m
+\end{align*}
+In order to solve this, we need to write our system of equations in matrix form so that we have,
+\begin{align*}
+	A\mathbf{u}^m &= \mathbf{u}^{m-1} \\
+	\implies \mathbf{u}^m &= A^{-1} \mathbf{u}^{m-1}
+\end{align*}
+
+Therefore, we are able to find our timestep $m$ from the previous, $m-1$, and update our system. In doing this, be careful about the top and bottom row of your matrix $A$, as this must incorporate boundary conditions!
+
+\subsection{Boundary conditions}
+For Neumann (or flux) boundary conditions, we can treat these as first or second order,
+\begin{align*}
+	\frac{\partial u}{\partial x} \approxeq \begin{cases}
+	\frac{u_{j+1}^{m+1} - u_j^{m+1}}{\Delta x} = c &\implies u_{j+1}^{m+1} - u_j^{m+1} = c\Delta x \quad, \text{first order} \\
+	\frac{-3u_j^{m+1}+4u_{j+1}^{m+1} - u_{j+2}^{m+1}}{2\Delta x} = c &\implies -3u_j^{m+1}+4u_{j+1}^{m+1} - u_{j+2}^{m+1} = 2c\Delta x \quad, \text{second order}
+	\end{cases}
+\end{align*}
+
+\subsection{Characteristics of implicit scheme}
+\begin{itemize}
+	\item The backward difference scheme is unconditionally stable – permits any value of $\sigma$;
+	\item The local truncation error is $O(\Delta x^2)+O(\Delta t)$, the same as for the forward difference scheme
+	\item Unconditional stability permits much larger time steps, but they attract larger truncation error
+	\item If the time step is chosen as roughly equivalent to the grid spacing, then $O(\Delta t) \ll O(\Delta x^2)$, and so the
+	error of the backward difference scheme becomes $\sim O(\Delta t)$
+	\item It is possible to use a mixed approach, which maintains unconditional stability, and reduces the leading error term of the local truncations
+\end{itemize}
+
+
+\section{Crank-Nicolson (CN) scheme for diffusion}
+Okay, so we achieved unconditional stability - but what if we want to reduce error? This is where the CN scheme comes in. The idea here is that we use a mixed central difference, namely we take the average central difference between the current and previous timestep,
+\begin{align*}
+\partial_{xx} u \approxeq \frac{1}{2} \left(\frac{u_{j+1}^m - 2u_j^m + u_{j-1}^m}{\Delta x ^2} + \frac{u_{j+1}^{m-1} - 2u_j^{m-1} + u_{j-1}^{m-1}}{\Delta x ^2}\right) 
+\end{align*}
+In addition to this, we use our backwards difference in time for the temporal derivative. Substituting these into the diffusion equation and arranging terms of matching timestep on LHS and RHS (\textit{try this yourself!}) we get,
+\begin{align*}
+	-\frac{\sigma}{2} u_{j-1}^m + (1+\sigma) u_j^m - \frac{\sigma}{2}u_{j+1}^m = 
+	 \frac{\sigma}{2} u_{j-1}^{m-1} + (1-\sigma) u_j^{m-1} + \frac{\sigma}{2}u_{j+1}^{m-1}
+\end{align*}
+This, we can then write into matrix form and look to solve. In the end, this gives us a scheme that has error $O(\Delta x^2) + O(\Delta t^2)$. \\
+
+\subsection{Boundary conditions}
+These can be applied in the same way as our previous schemes, namely, discretise the if a Neumann boundary condition and form this equation in the top/bottom rows of the matrices. For the CN scheme, the matrix associated with the previous timestep may have all zeros for the top and bottom row. This is a result of the boundary conditions not being dependent (necessarily) on the previous time. 
+
+\end{document}
