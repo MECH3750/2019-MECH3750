@@ -1,0 +1,151 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{exinn}{Example}[section]
+\newenvironment{example}
+{\clubpenalty=10000
+	\begin{exinn}%
+		\mbox{}%
+		{\color{blue}\leaders\hrule height .8ex depth \dimexpr-.8ex+0.8pt\relax\hfill}%
+		\mbox{}\linebreak\ignorespaces}
+	{\par\kern2ex\hrule\end{exinn}}
+
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{bigints}
+\usepackage{fourier}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{dsfont}
+\usepackage{units}
+\usepackage{textcomp}
+\usepackage{subcaption}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{pdfpages}
+\renewcommand{\lstlistlistingname}{Code Listings}
+\renewcommand{\lstlistingname}{Code Listing}
+\definecolor{gray}{gray}{0.5}
+\definecolor{green}{rgb}{0,0.5,0}
+\lstset{
+	tabsize=4,
+	rulecolor=,
+	language=python,
+	%basicstyle=\ttfamily\scriptsize,
+	basicstyle=\footnotesize,
+	upquote=true,
+	numbers=left,
+	numberstyle=\footnotesize,
+	aboveskip={1.5\baselineskip},
+	extendedchars=true,
+	linewidth=\linewidth,
+	breaklines=false,
+	prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	columns=fullflexible,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+\pagestyle{fancy}
+\lhead{Travis Mitchell}
+\rhead{Week 10}
+\chead{MECH3750 - Content Summary}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\footrulewidth}{0.8pt}
+
+\author{\textit{Travis Mitchell}}
+\title{Lecture Content Summaries for MECH3750}
+\date{Updated: 20 September, 2019}			
+
+\makeatletter
+\newcommand*{\toccontents}{\@starttoc{toc}}
+\makeatother
+\renewcommand{\thesection}{\thepart \arabic{section}}
+
+
+\begin{document}
+\section{Convection Equation}
+We started this week by looking at the convection equation,
+\begin{align*}
+	\partial_t u + v \partial_x u = w.
+\end{align*}
+To numerically discretise the spatial derivative we looked at three potential schemes, 
+\begin{itemize}
+	\item \textbf{Upwind} \\
+	\begin{align*}
+		\partial_x u = \frac{u_j - u_{j-1}}{\delta x} + O(\delta x)
+	\end{align*}
+	Can be solved with the typical schemes we've seen, i.e. explicit, implicit, Crank-Nicolson (mixed). In this equation is where the term numerical diffusion was highlighted. Here we substituted in a Taylor series for our partial and could define a diffusion term related to grid size as,
+	\begin{align*}
+		\partial_t u + v \partial_x u = D_{num} \partial_{xx} u+ H.o.T
+	\end{align*}
+	\item \textbf{Downwind --> ALWAYS UNSTABLE}
+	\begin{align*}
+	\partial_x u = \frac{u_{j+1} - u_{j}}{\delta x} + O(\delta x)
+	\end{align*}
+	\item \textbf{Central}
+	\begin{align*}
+	\partial_x u = \frac{u_{j+1} - u_{j-1}}{2\delta x} + O(\delta x^2)
+	\end{align*}
+	This method is stable if written implicitly, and marginally stable in Crank-Nicolson form. The central difference scheme is typically avoided for these advection type problems due to reflections and sharp shapes.
+\end{itemize}
+
+Keep in mind for solving convection terms that the numerics must match the physics! This is important to consider for boundary conditions as well as the general formulation of your scheme.
+
+\subsection{Advanced solution techniques}
+\begin{itemize}
+	\item \textbf{Lax-Wendroff Scheme}\\
+	This scheme allows us to solve the convection equation with $O(\delta x^2)$ and $O(\delta t^2)$, which is not universally the case with the previous methods. To do this, a second order Taylor series is used as a basis. This means we take the value of $u$ at time $t+\delta t$ as,
+	\begin{align*}
+		u_j^{m+1} &= u_j^m + \delta t \partial_t u_{j,m} + \frac{\delta t^2}{2} \partial_{tt} u_{j,m} + H.o.T \\
+				  &\approx u_j^m -  v \delta t\partial_x u +  v^2\frac{\delta t^2}{2} \partial_{xx} u \\
+				  &\approx u_j^m -  v \delta t\frac{u_{j+1}^m - u_{j-1}^m}{2\delta x} +  v^2\frac{\delta t^2}{2}\frac{u_{j+1}^m -2u_j^m + u_{j-1}^m}{\delta x^2}
+	\end{align*}
+	Therefore, taking $\sigma = v\delta t/\delta x$ and rearranging we find,
+	\begin{align*}
+		u_j^{m+1} = \frac{\sigma}{2} (1+\sigma) u^m_{j-1} + (1-\sigma^2)u_j^m - \frac{\sigma}{2}(1-\sigma)u_{j+1}^m + O(\delta x^2) + O(\delta t^2)
+	\end{align*}
+	\item \textbf{MacCormack Method}
+	This method takes the form of an explicit predictor-corrector FD scheme that is also second order accurate in space and time. This is done in steps,
+	\begin{enumerate}
+		\item Update prediction, $u_j^p$, with a forward in time, backward in space difference,
+		\begin{align*}
+			u_j^p = u_j^m - \sigma (u_j^m - u^m_{j-1})
+		\end{align*}
+		\item The corrector, $u_j^c$, is then determined with a backward in time, forward in space difference,
+		\begin{align*}
+			u_j^c = u_j^m - \sigma(u_{j+1}^p - u_j^p)
+		\end{align*}
+		\item Now we update, which for linear equations is equivalent to the Lax-Wendroff scheme,
+		\begin{align*}
+			u_j^{m+1} = \frac{u_j^p + u_j^c}{2}
+		\end{align*}
+	\end{enumerate}
+	The MacCormack method is quite general and is often applied to hyperbolic systems, linear and nonlinear with waves propagating in both directions. However, it is not monotonic and as such is not good for handling jumps/shocks in a system.
+\end{itemize}
+
+\section{Convection and Diffusion}
+Just introduced, but may be rather important for your assignment!
+\begin{align*}
+	\partial_t u + \mathbf{v} \cdot \nabla u = D\Delta u
+\end{align*}
+\end{document}
